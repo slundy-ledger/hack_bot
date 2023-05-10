@@ -1,0 +1,29 @@
+repos:
+  - # Generic file formatting (not python-specific)
+    repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-yaml
+        exclude: ^(helm/|terraform/)
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: debug-statements
+  - # Nazi-mode (aka. almost strict PEP8) formatting
+    repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+      - id: black
+        language_version: python3
+  - # Import order
+    repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: isort (python)
+        args: ["--profile", "black"]
+  - # Static analysis
+    repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
