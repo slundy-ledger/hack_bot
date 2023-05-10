@@ -326,24 +326,22 @@
                     $('.loading').hide();
                     var user_input = input_text;
 
-                    // Remove the markdown formatting from the chatbot's response
-                    //var chatbot_output = response.output.replace(/(^#+\s*)|(\n#+\s*)/g, '');
 
                     // Create a Showdown converter
-                    var converter = new showdown.Converter();
+                    var conv = new showdown.Converter({simpleLineBreaks: true, excludeTrailingPunctuationFromURLs: true, smartIndentationFix: true});
 
                     // Convert chatbot_output to HTML using Showdown
-                    //var chatbot_output = converter.makeHtml(response.output);
-                    var chatbot_output = converter.makeMarkdown(response.output);
+                    var chatbot_output = conv.makeHtml(response.output);
+                    
+                    
+                    // console.log("-- pre processing --");
+                    // console.log(response.output);
 
+                    // console.log("-- post processing --");
+                    // console.log(chatbot_output)
+                    
                     // Make links clickable
                     chatbot_output = makeLinksClickable(chatbot_output);
-
-                    // Clean URL patterns
-                    chatbot_output = cleanUrlPatterns(chatbot_output);
-
-                    // Remove the last period if present
-                    chatbot_output = chatbot_output.replace(/\.(?=[^.]*$)/, '');
 
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');

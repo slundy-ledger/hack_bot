@@ -40,7 +40,7 @@ web3 = Web3(Web3.HTTPProvider(os.environ["WEB3_PROVIDER"]))
 # Initialize LLM
 llm = ChatOpenAI(
     openai_api_key=os.environ["OPENAI_API_KEY"],
-    temperature=0.1,
+    temperature=0,
     model_name="gpt-3.5-turbo"
     # model_name='gpt-4'
 )
@@ -87,6 +87,8 @@ VERY IMPORTANT:
 - Direct users who want to learn more about Ledger products or compare devices to https://www.ledger.com/.
 - Updating or downloading Ledger Live must always be done via this link: https://www.ledger.com/ledger-live
 - Share this list for tips on keeping your recovery phrase safe: https://support.ledger.com/hc/en-us/articles/360005514233-How-to-keep-your-24-word-recovery-phrase-and-PIN-code-safe-?docs=true/
+- Please denote new lines with a <br /> tag.
+- Please limit paragraphs to 3-4 sentences.
 
 Begin! Keep in mind that your primary objective is to assist them in effectively performing their duties.
 
@@ -163,7 +165,8 @@ def react_description():
             + user_input
             + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses. Don't share a link that is not included in the previous context. NEVER share https://www.ledger.com/academy/ links."
         )
-        # augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input
+        print("--"*64)
+        print(f"FULL QUERY")
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
@@ -175,8 +178,11 @@ def react_description():
             ],
         )
         response = res["choices"][0]["message"]["content"]
-        # response = re.sub(r'<.*?>|(%3C/li%3E|</p>|</li>|</p></li>|\.?</p></li>|</li>)\?docs=true|\.?support=true', '-', response)
-        print(response)
+        
+        print("--"*64)
+        print(repr(response))
+        print("--"*64)
+
         return jsonify({"output": response})
     except ValueError as e:
         print(e)
