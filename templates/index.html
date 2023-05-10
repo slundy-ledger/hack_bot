@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,23 +27,23 @@
             border-radius: 5px;
             padding: 8px 16px;
             box-shadow: 2px 2px 0 0 black,
-            4px 4px 0 0 white;
+                4px 4px 0 0 white;
             transition-duration: 200ms;
             font-family: 'Press Start 2P', cursive;
             margin-bottom: 16px;
             margin-top: 8px;
         }
 
-            button:hover {
+        button:hover {
             box-shadow: 3px 3px black, 6px 6px 0 0 white;
             transform: translate(-2px, 2px);
         }
 
-            form {
-                margin-top: 16px;
-            }
+        form {
+            margin-top: 16px;
+        }
 
-            input[type="text"] {
+        input[type="text"] {
             background-color: #444;
             color: rgb(231, 224, 224);
             border: none;
@@ -50,18 +51,18 @@
             border-radius: 4px;
         }
 
-            input[type="text"]:focus {
+        input[type="text"]:focus {
             outline: none;
         }
 
-            label {
+        label {
             display: block;
             margin-bottom: 8px;
         }
 
         input[type="text"] {
             background-color: #9f9c9c;
-            color:black;
+            color: black;
             border: none;
             padding: 8px;
             border-radius: 4px;
@@ -85,7 +86,7 @@
         }
 
 
-            #submit-btn {
+        #submit-btn {
             display: flex;
             text-align: center;
             background: rgb(210, 207, 210);
@@ -95,13 +96,13 @@
             border-radius: 5px;
             padding: 8px 16px;
             box-shadow: 2px 2px 0 0 black,
-            4px 4px 0 0 white;
+                4px 4px 0 0 white;
             transition-duration: 200ms;
             font-family: 'Press Start 2P', cursive;
             margin-bottom: 8px
         }
 
-            #submit-btn:hover {
+        #submit-btn:hover {
             box-shadow: 3px 3px black, 6px 6px 0 0 white;
             transform: translate(-2px, 2px);
         }
@@ -129,8 +130,7 @@
 
         .loading {
 
-                margin-top: 8px
-
+            margin-top: 8px
         }
 
         .conversation-wrapper {
@@ -162,6 +162,7 @@
             from {
                 width: 0;
             }
+
             to {
                 width: 100%;
             }
@@ -172,9 +173,9 @@
             white-space: nowrap;
             animation: typewriter 1s steps(50, end) forwards;
         }
-
     </style>
 </head>
+
 <body>
     <h1>Knowledge Bot&#129497;&#8205;&#9794;</h1>
     <div class="conversation-wrapper">
@@ -204,46 +205,20 @@
     const fithEle = document.getElementById('try-again')
     fithEle.style.display = 'none'
 
-    function makeLinksClickable(text) {
-        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
-        return text.replace(urlPattern, function(match) {
-            if (match.slice(-1) === '.') {
-                match = match.slice(0, -1);
-            }
-            var cleanedUrl = cleanUrlPatterns(match);
-            var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
-            return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
-        });
-    }
-
-
-    function cleanUrlPatterns(url) {
-        var patterns = [
-            /(%3C\/p%3E|<\/p>|<\/li>|<\/p><\/li>|\.<\/p><\/li>|<\/p><\/li>\?docs=true|<\/p>\?docs=true)\?docs=true/g,
-            /\.?support=true/g,
-            /(\.)(\?docs=true)/g,
-            /(\.)(\?support=true)/g,
-            /(%3C(\/?[a-z]+)[^%]*%3E)/ig,
-            /<\/p><\/li>/g,
-            /<\/p>/g,
-            /<\/li>/g,
-            /<\p>/g,
-            /<\li>/g,
-            /<p>/g,
-            /<li>/g,
-        ];
-
-        patterns.forEach(function (pattern) {
-            url = url.replace(pattern, '');
-        });
-
-        return url;
-    }
-
-
     function scrollToBottom() {
         var conversationContainer = document.getElementById('conversation-container');
         conversationContainer.scrollTop = conversationContainer.scrollHeight;
+    }
+
+    function makeLinksClickable(text) {
+        var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
+        return text.replace(urlPattern, (url) => {
+            if (url.slice(-1) === '.') {
+                url = url.slice(0, -1);
+            }
+            var prefix = /^https?:\/\//.test(url) ? '' : 'http://';
+            return '<a href="' + prefix + url + '" target="_blank">' + url + '</a>';
+        });
     }
 
 
@@ -251,7 +226,6 @@
         let i = 0;
         let isTag = false;
         let text = "";
-
         function typeNextChar() {
             if (i < chatbot_output.length) {
                 let char = chatbot_output.charAt(i);
@@ -277,8 +251,9 @@
                 }
             }
         }
-
         typeNextChar();
+        // response_div.innerHTML = chatbot_output
+
     }
 
 
@@ -303,7 +278,7 @@
 
     function updateUrls(text) {
         var urlPattern = /((https?:\/\/)|(www\.))[^\s]+/ig;
-        return text.replace(urlPattern, function(match) {
+        return text.replace(urlPattern, function (match) {
             var cleanedUrl = cleanUrlPatterns(match);
             var prefix = /^https?:\/\//.test(cleanedUrl) ? '' : 'http://';
             return '<a href="' + prefix + cleanedUrl + '" target="_blank">' + cleanedUrl + '</a>';
@@ -311,18 +286,18 @@
     }
 
 
-    $(function() {
-        $('form').submit(function(event) {
+    $(function () {
+        $('form').submit(function (event) {
             event.preventDefault();
             var input_text = $('#input').val();
             $('.loading').show();
             $.ajax({
                 type: 'POST',
                 url: '/api',
-                data: JSON.stringify({user_input: input_text}),
+                data: JSON.stringify({ user_input: input_text }),
                 contentType: 'application/json',
 
-                success: function(response) {
+                success: function (response) {
                     $('.loading').hide();
                     var user_input = input_text;
 
@@ -330,26 +305,39 @@
                     //var chatbot_output = response.output.replace(/(^#+\s*)|(\n#+\s*)/g, '');
 
                     // Create a Showdown converter
-                    var converter = new showdown.Converter();
+                    var converter = new showdown.Converter({ simpleLineBreaks: true, tables: true, excludeTrailingPunctuationFromURLs: true, ghCodeBlocks: true });
+
+
+                    var chatbot_output = response.output;
+                    //charbot_output = chatbot_output.replaceAll("\n", "<br>")
+
+                    console.log("RAW RESPONSE")
+                    console.log(chatbot_output)
 
                     // Convert chatbot_output to HTML using Showdown
-                    //var chatbot_output = converter.makeHtml(response.output);
-                    var chatbot_output = converter.makeMarkdown(response.output);
+                    chatbot_output = converter.makeHtml(chatbot_output);
+
+
+                    console.log("SHOWDOWN RESPONSE")
+                    console.log(chatbot_output)
+
 
                     // Make links clickable
-                    chatbot_output = makeLinksClickable(chatbot_output);
+                    // chatbot_output = makeLinksClickable(chatbot_output);
 
                     // Clean URL patterns
-                    chatbot_output = cleanUrlPatterns(chatbot_output);
+                    // chatbot_output = cleanUrlPatterns(chatbot_output);
 
                     // Remove the last period if present
-                    chatbot_output = chatbot_output.replace(/\.(?=[^.]*$)/, '');
+                    // chatbot_output = chatbot_output.replace(/\.(?=[^.]*$)/, '');
 
+                    console.log("FINAL RESPONSE")
+                    console.log(chatbot_output)
                     updateConversation(user_input, chatbot_output);
                     $('#input').val('');
                 },
 
-                error: function() {
+                error: function () {
                     $('.loading').hide();
                 }
             });

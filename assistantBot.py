@@ -1,8 +1,10 @@
 import os
 import uuid
-
+import json
 import openai
 import pinecone
+import re
+import requests
 
 from dotenv import load_dotenv
 from eth_account.messages import encode_defunct
@@ -15,6 +17,17 @@ from web3 import Web3
 
 
 load_dotenv()
+
+FAKE_RESPONSE = """Ledger Live Pro is a feature available only for Ledger Live desktop and is designed specifically for traders. This version includes a more advanced interface, real-time market data, more advanced order types, and the option to connect multiple trading platforms to Ledger Live. If you're interested in using Ledger Live Pro, you'll need to have Ledger Live installed on your desktop. Here's how you can download and install Ledger Live:
+
+- First, navigate to the official Ledger website at https://www.ledger.com/ledger-live/download/.
+- Next, select the appropriate operating system, for example, Windows, macOS, or Linux, and choose the download option for 'Ledger Live'.
+- Once downloaded, open the Ledger Live executable file and follow the on-screen instructions to complete the installation process.
+- Once you have installed Ledger Live on your desktop, you can start using Ledger Live Pro. Simply open Ledger Live desktop and click on the 'Pro' button located in the top right corner of the interface.
+- Please note that to enable Ledger Live Pro, you will need to switch on the 'Advanced mode' from the application settings.
+
+For more information about Ledger Live Pro, including its features and how to use it, you can refer to the official Ledger Support website at https://support.ledger.com/hc/en-us/articles/360024436233-Ledger-Live-Pro.
+"""
 
 history = ChatMessageHistory()
 
@@ -161,9 +174,9 @@ def react_description():
             "\n\n---\n\n".join(contexts)
             + "\n\n-----\n\n"
             + user_input
-            + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses. Don't share a link that is not included in the previous context. NEVER share https://www.ledger.com/academy/ links."
+            + "? Please provide a comprehensive answer to the question, and make sure to incorporate relevant URL links from the previous context. Do not enclose the links in parentheses. Don't share a link that is not included in the previous context. Never share links containing 'academy' in the URL. Important : format your response using markdown syntax. When writing a list, use dash instead of numbers."
         )
-        # augmented_query = "\n\n---\n\n".join(contexts)+"\n\n-----\n\n"+user_input
+
         print(augmented_query)
 
         res = openai.ChatCompletion.create(
@@ -174,13 +187,48 @@ def react_description():
                 {"role": "user", "content": augmented_query},
             ],
         )
+
+        # response = FAKE_RESPONSE
+
         response = res["choices"][0]["message"]["content"]
-        # response = re.sub(r'<.*?>|(%3C/li%3E|</p>|</li>|</p></li>|\.?</p></li>|</li>)\?docs=true|\.?support=true', '-', response)
+
         print(response)
-        return jsonify({"output": response})
+        test_urls_from_response_okay(response)
+        return {"output": response}
+
     except ValueError as e:
         print(e)
-        return jsonify({"output": "Sorry, could you please repeat the question?"})
+        return {"output": "Sorry, could you please repharse the question?"}
+
+
+def test_urls_from_response_okay(text: str):
+    browser_headers = {
+        "authority": "support.ledger.com",
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+        "cache-control": "max-age=0",
+        "sec-ch-ua": '"Chromium";v="112", "Google Chrome";v="112", "Not:A-Brand";v="99"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "macOS",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+    }
+    url_pattern = re.compile(r"https?://\S+")
+    urls = re.findall(url_pattern, text)
+    formatted_urls = [url.rstrip(".") for url in urls]
+    for url in formatted_urls:
+        if "academy" in url:
+            raise ValueError(url)
+        """
+        res = requests.get(url, browser_headers)
+        if res.status_code in [401, 403, 404]:
+            # always get 403, ledger is protected from bot even with browser headers 
+            raise ValueError(url)
+        """
 
 
 ADDRESS = "0xb022C9c672592c274397557556955eE968052969"
